@@ -45,17 +45,26 @@ class SecureLoginCookieAuthHelper(ExtendedCookieAuthHelper):
                 return ExtendedCookieAuthHelper.extractCredentials(self, request)
             token = request.form.get('__ac_securitytoken', '')
             if not request.SESSION.get('secureloginenabled', False) or not secure.has_token(login):
-                IStatusMessage(request).add(_(u'A security token has been sent to your email address, '
-                                               'please enter it into the provided field to complete '
-                                               'the login.'), 'info')
-                secure.send(login)
+                if secure.send(login) is interfaces.EMAIL:
+                    msg = _('message_email',
+                            default=u'A security token has been sent to your email address, '
+                                     'please enter it into the provided field to complete '
+                                     'the login.')
+                else:
+                    msg = _('message_mobile',
+                            default=u'A security token has been sent to your mobile number, '
+                                     'please enter it into the provided field to complete '
+                                     'the login.')
+                IStatusMessage(request).add(msg, 'info')
+                request.form['secureloginfailure'] = True
                 request.SESSION.set('secureloginenabled', True)
                 return {}
             if secure.check(login, token):
                 request.SESSION.set('secureloginenabled', False)
                 return ExtendedCookieAuthHelper.extractCredentials(self, request)
             else:
-                IStatusMessage(request).add(_(u'The provided security token is not valid.'), 'error')
+                request.form['secureloginfailure'] = True
+                IStatusMessage(request).add(_('error_token', default=u'The provided security token is not valid.'), 'error')
             return {}
         return ExtendedCookieAuthHelper.extractCredentials(self, request)
 

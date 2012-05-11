@@ -12,10 +12,10 @@
   <adapter factory=".configlet.SecureLoginControlPanelAdapter" />
 
   <browser:page
-      name="securelogin-controlpanel"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      class=".configlet.SecureLoginControlPanel"
-      permission="raptus.securelogin.Configure"
-      />
+    name="securelogin-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".configlet.SecureLoginControlPanel"
+    permission="raptus.securelogin.Configure"
+    />
 
 </configure>

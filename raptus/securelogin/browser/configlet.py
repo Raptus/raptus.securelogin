@@ -30,6 +30,7 @@ class SecureLoginControlPanelAdapter(SchemaAdapterBase):
     groups = ProxyFieldProperty(interfaces.IConfiguration['groups'])
     email = ProxyFieldProperty(interfaces.IConfiguration['email'])
     timeout = ProxyFieldProperty(interfaces.IConfiguration['timeout'])
+    token = ProxyFieldProperty(interfaces.IConfiguration['token'])
 
 
 class SecureLoginControlPanel(ControlPanelForm):

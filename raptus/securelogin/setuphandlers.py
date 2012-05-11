@@ -4,9 +4,11 @@ from Products.PlonePAS.Extensions.Install import setupAuthPlugins, activatePlugi
 from raptus.securelogin import auth
 
 PROPERTIES = (
-    ('ip_bypass', 'lines'),
-    ('groups', 'lines'),
-    ('email', 'string')
+    ('ip_bypass', 'lines', ''),
+    ('groups', 'lines', ''),
+    ('email', 'string', ''),
+    ('timeout', 'int', 5),
+    ('token', 'int', 8)
 )
 
 PLUGIN_ID = 'secureloginauth'
@@ -19,20 +21,19 @@ def setupVarious(context):
     portal = context.getSite()
 
     properties = getToolByName(portal, 'portal_properties').securelogin_properties
-    for id, type in PROPERTIES:
+    for id, type, default in PROPERTIES:
         if not properties.hasProperty(id):
-            properties._setProperty(id, '', type)
+            properties._setProperty(id, default, type)
 
     acl = getToolByName(portal, 'acl_users')
 
     if acl.objectIds(['Extended Cookie Auth Helper']):
-        disable=['IExtractionPlugin', 'IChallengePlugin',
-                 'ICredentialsResetPlugin', 'ICredentialsUpdatePlugin']
+        disable=['IExtractionPlugin', 'ICredentialsResetPlugin', 'ICredentialsUpdatePlugin']
         activatePluginInterfaces(portal, 'credentials_cookie_auth',
                 disable=disable)
     if not acl.objectIds(['Secure Login Authentication']):
         auth.manage_addSecureLoginCookieAuthHelper(acl, 'securelogin_credentials_cookie_auth', cookie_name='__ac')
-        disable=['ICredentialsResetPlugin', 'ICredentialsUpdatePlugin']
+        disable=['ICredentialsResetPlugin', 'ICredentialsUpdatePlugin', 'IChallengePlugin']
         activatePluginInterfaces(portal, 'securelogin_credentials_cookie_auth',
                 disable=disable)
 
